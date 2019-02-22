@@ -6,27 +6,24 @@
 '''
 
 from __future__ import division, print_function
-import os
 
+import os
 import warnings
-import numpy as np
 
 from keras import backend as K
-from keras.layers import Input
-from keras.layers.core import Activation, Dense, Flatten
-from keras.layers.pooling import MaxPooling2D
-from keras.models import Model
+from keras.engine.topology import get_source_inputs
 from keras.layers import Conv2D
-from keras.regularizers import l2
-from keras.layers.core import Dropout
 from keras.layers import GlobalAveragePooling2D
 from keras.layers import GlobalMaxPooling2D
-from keras.applications.imagenet_utils import _obtain_input_shape
-from keras.engine.topology import get_source_inputs
-from keras.utils.data_utils import get_file
+from keras.layers import Input
+from keras.layers.core import Dense, Flatten
+from keras.layers.core import Dropout
+from keras.layers.pooling import MaxPooling2D
+from keras.models import Model
+from keras.regularizers import l2
 from keras.utils import layer_utils
-from keras.preprocessing import image
-from keras.applications.imagenet_utils import preprocess_input
+from keras.utils.data_utils import get_file
+from keras_applications.imagenet_utils import _obtain_input_shape
 
 WEIGHTS_PATH = 'https://github.com/GKalliatakis/Keras-VGG16-places365/releases/download/v1.0/vgg16-places365_weights_tf_dim_ordering_tf_kernels.h5'
 WEIGHTS_PATH_NO_TOP = 'https://github.com/GKalliatakis/Keras-VGG16-places365/releases/download/v1.0/vgg16-places365_weights_tf_dim_ordering_tf_kernels_notop.h5'
@@ -243,19 +240,20 @@ def VGG16_Places365(include_top=True, weights='places',
 
 
 if __name__ == '__main__':
-    import urllib2
+    import urllib.request
     import numpy as np
     from PIL import Image
     from cv2 import resize
 
     TEST_IMAGE_URL = 'http://places2.csail.mit.edu/imgs/demo/6.jpg'
 
-    image = Image.open(urllib2.urlopen(TEST_IMAGE_URL))
+    image = Image.open(urllib.request.urlopen(TEST_IMAGE_URL))
     image = np.array(image, dtype=np.uint8)
     image = resize(image, (224, 224))
     image = np.expand_dims(image, 0)
 
     model = VGG16_Places365(weights='places')
+    model.summary()
     predictions_to_return = 5
     preds = model.predict(image)[0]
     top_preds = np.argsort(preds)[::-1][0:predictions_to_return]
