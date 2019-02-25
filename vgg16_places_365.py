@@ -8,6 +8,8 @@
 from __future__ import division, print_function
 
 import os
+
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 import warnings
 
 from keras import backend as K
@@ -245,18 +247,10 @@ if __name__ == '__main__':
     from PIL import Image
     from cv2 import resize
 
-    TEST_IMAGE_URL = 'http://places2.csail.mit.edu/imgs/demo/6.jpg'
-
-    image = Image.open(urllib.request.urlopen(TEST_IMAGE_URL))
-    image = np.array(image, dtype=np.uint8)
-    image = resize(image, (224, 224))
-    image = np.expand_dims(image, 0)
-
     model = VGG16_Places365(weights='places')
     model.summary()
     predictions_to_return = 5
-    preds = model.predict(image)[0]
-    top_preds = np.argsort(preds)[::-1][0:predictions_to_return]
+
 
     # load the class label
     file_name = 'categories_places365.txt'
@@ -269,6 +263,15 @@ if __name__ == '__main__':
             classes.append(line.strip().split(' ')[0][3:])
     classes = tuple(classes)
 
+    TEST_IMAGE_URL = 'http://places2.csail.mit.edu/imgs/demo/6.jpg'
+
+    image = Image.open(urllib.request.urlopen(TEST_IMAGE_URL))
+    image = np.array(image, dtype=np.uint8)
+    image = resize(image, (224, 224))
+    image = np.expand_dims(image, 0)
+
+    preds = model.predict(image)[0]
+    top_preds = np.argsort(preds)[::-1][0:predictions_to_return]
     print('--PREDICTED SCENE CATEGORIES:')
     # output the prediction
     for i in range(0, 5):
